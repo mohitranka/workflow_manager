@@ -12,11 +12,17 @@ class FileSystemBackend(BaseBackend):
             f.close()
     
     def save_job(self, job):
-        pickle.dump(job, open(self.file_name, 'wb'))
+        data = {job.id: job}
+        jobs = self.get_jobs()
+        jobs.update(data)
+        pickle.dump(jobs, open(self.file_name, 'wb'))
         
-    def get_job(self):
+    def get_job(self, id):
+        return self.get_jobs[id]
+        
+    def get_jobs(self):
         try:
             return pickle.load(open(self.file_name, 'rb'))
         except:
-            return None
+            return {}
         
