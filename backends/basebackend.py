@@ -1,4 +1,4 @@
-from utils import State
+from state import State
 class BaseBackend(object):
     def get_active_jobs(self):
         output = {}
@@ -8,3 +8,12 @@ class BaseBackend(object):
             if job.state in (State.INITIALIZED, State.RUNNING):
                 output[job_id] = job
         return output
+        
+    def get_job(self, id):
+        return self.get_jobs[id]
+        
+    def save_job(self, job):
+        raise NotImplementedError("Method save_job is not implemented")
+        
+    def get_jobs(self):
+        raise NotImplementedError("Method get_jobs is not implemented")

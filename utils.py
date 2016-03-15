@@ -1,20 +1,18 @@
-class ClassProperty(property):
-    def __get__(self, cls, owner):
-        return self.fget.__get__(None, owner)()
-        
-class State(object):
-    INITIALIZED=0
-    RUNNING=1
-    SUCCESS=2
-    FAILED=3
-    ABORTED=4
-    
-    @classmethod
-    def _valid_states(_cls):
-        return [getattr(_cls, name) for name in dir(_cls) if not name.startswith('_')]
-        
-    _valid_states = ClassProperty(_valid_states)
-    
-if __name__ == '__main__':
-    print State._valid_states
-    
+"""Utilities for workflow manager
+"""
+import importlib
+
+def get_backend(_backend_class):
+    """Returns the backend
+    """
+    backend = getattr(importlib.import_module('backends.%s' %
+                                              (_backend_class.lower())), _backend_class)()
+    return backend
+
+def get_executor(_executor_class, _backend_class):
+    """Returns the executor
+    """
+    backend = get_backend(_backend_class)
+    executor = getattr(importlib.import_module('executors.%s' %
+                                               (_executor_class.lower())), _executor_class)(backend)
+    return executor

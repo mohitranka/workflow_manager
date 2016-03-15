@@ -1,10 +1,33 @@
+"""
+"""
+import settings
+from ..utils import get_executor
+
+
 class BaseExecutor(object):
-    pass
+    """
+    """
+
+    def __init__(self, backend):
+        self.backend = backend
+
+    def save_job(self, job):
+        self.backend.save_job(job)
+
+    def start(self):
+        raise NotImplementedError(
+            "start method is not implemented for the executor %s" % self.__class__.__name__)
+
+    def run(self):
+        raise NotImplementedError(
+            "run method is not implemented for the executor %s" % self.__class__.__name__)
+
+    def shutdown(self):
+        raise NotImplementedError(
+            "shutdown method is not implemented for the executor %s" % self.__class__.__name__)
 
 if __name__ == '__main__':
-    #Use for factory method as well
-    import settings
-    import importlib
-    _class = settings.DEFAULT_EXECUTOR
-    executor = getattr(importlib.import_module('executors.%s' % (_class.lower())), _class)()
+    executor = get_executor(settings.DEFAULT_EXECUTOR,
+                            settings.DEFAULT_BACKEND)
+    executor.start()
     executor.run()
