@@ -9,8 +9,8 @@ class BaseBackend(object):
                 output[job_id] = job
         return output
         
-    def get_job(self, id):
-        return self.get_jobs[id]
+    def get_job(self, job_id):
+        return self.get_jobs()[job_id]
         
     def save_job(self, job):
         raise NotImplementedError("Method save_job is not implemented")

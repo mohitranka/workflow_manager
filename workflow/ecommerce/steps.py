@@ -10,9 +10,12 @@ class PickOrderFromHub(BaseStep):
     def run(self, job):
         try:
             print "PickOrderFromHub for job - %s" %(job.id)
-            job.curr_step = job.workflow['ScheduleDelivery']
-        except:
+            job.curr_step = job.workflow.flow['ScheduleDelivery']
+        except Exception, e:
+            print "Error while processing PickOrderFromHub for job - %s" %(job.id)
             job.state = State.FAILED
+        finally:
+            job.save()
         
 class ScheduleDelivery(BaseStep):
     def __init__(self, next_steps, dependencies):
@@ -21,9 +24,13 @@ class ScheduleDelivery(BaseStep):
     def run(self, job):
         try:
             print "ScheduleDelivery for job - %s" %(job.id)
-            job.curr_step = job.workflow['ProcessDelivery']
-        except:
+            job.curr_step = job.workflow.flow['ProcessDelivery']
+        except Exception, e:
+            print e
+            print "Error while processing ScheduleDelivery for job - %s" %(job.id)
             job.state = State.FAILED
+        finally:
+            job.save()
 
 class ProcessDelivery(BaseStep):
     def __init__(self, next_steps, dependencies):
@@ -32,9 +39,12 @@ class ProcessDelivery(BaseStep):
     def run(self, job):
         try:
             print "ProcessDelivery for job - %s" %(job.id)
-            job.curr_step = job.workflow[job.data['nextStep']] 
+            job.curr_step = job.workflow.flow[job.data['nextStep']] 
         except:
+            print "Error while processing 'ProcessDelivery' for job - %s" %(job.id)
             job.state = State.FAILED
+        finally:
+            job.save()
         
 class SuccessfulDelivery(BaseStep):
     def __init__(self, next_steps, dependencies):
@@ -45,7 +55,10 @@ class SuccessfulDelivery(BaseStep):
             print "SuccessfulDelivery for job - %s " %(job.id)
             job.curr_step = None
         except:
+            print "Error while processing 'ProcessDelivery' for job - %s" %(job.id)
             job.state = State.FAILED
+        finally:
+            job.save()
         
 class CustomerNotReachable(BaseStep):
     def __init__(self, next_steps, dependencies):
@@ -60,7 +73,10 @@ class CustomerNotReachable(BaseStep):
             print "Enqueued new_job %s for execution later" % (new_job.id)
             job.curr_step = None
         except:
+            print "Error while processing 'ProcessDelivery' for job - %s" %(job.id)
             job.state = State.FAILED
+        finally:
+            job.save()
             
 class ReseduleDelivery(BaseStep):
     def __init__(self, next_steps, dependencies):
@@ -74,4 +90,7 @@ class ReseduleDelivery(BaseStep):
             print "Job rescheduled for delivery by the customer. ID: " %(new_job.id)
             job.curr_step = None
         except:
+            print "Error while processing 'ProcessDelivery' for job - %s" %(job.id)
             job.state = State.FAILED
+        finally:
+            job.save()

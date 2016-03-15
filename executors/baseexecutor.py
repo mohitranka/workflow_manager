@@ -1,7 +1,7 @@
 """
 """
 import settings
-from ..utils import get_executor
+from utils import get_executor
 
 
 class BaseExecutor(object):
@@ -13,6 +13,9 @@ class BaseExecutor(object):
 
     def save_job(self, job):
         self.backend.save_job(job)
+        
+    def get_job(self, job_id):
+        return self.backend.get_job(job_id)
 
     def start(self):
         raise NotImplementedError(

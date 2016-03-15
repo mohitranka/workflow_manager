@@ -12,10 +12,11 @@ class EcommerceWorkflow(BaseWorkflow):
     def __init__(self):
         self.flow = {
             'PickOrderFromHub': PickOrderFromHub(['ScheduleDelivery'], []),
-            'ScheduleDelivery': ScheduleDelivery(['SuccessfulDelivery', 'CustomerNotReachable', 'ReseduleDelivery'], ['PickOrderFromHub']),
-            'SuccessfulDelivery': SuccessfulDelivery([], ['PickOrderFromHub', 'ScheduleDelivery']),
-            'CustomerNotReachable': CustomerNotReachable([], ['PickOrderFromHub', 'ScheduleDelivery']),
-            'ReseduleDelivery': ReseduleDelivery([], ['PickOrderFromHub', 'ScheduleDelivery'])
+            'ScheduleDelivery': ScheduleDelivery(['ProcessDelivery'], ['PickOrderFromHub']),
+            'ProcessDelivery': ProcessDelivery(['SuccessfulDelivery', 'CustomerNotReachable', 'ReseduleDelivery'], ['PickOrderFromHub', 'ScheduleDelivery']),
+            'SuccessfulDelivery': SuccessfulDelivery([], ['PickOrderFromHub', 'ScheduleDelivery', 'ProcessDelivery']),
+            'CustomerNotReachable': CustomerNotReachable([], ['PickOrderFromHub', 'ScheduleDelivery', 'ProcessDelivery']),
+            'ReseduleDelivery': ReseduleDelivery([], ['PickOrderFromHub', 'ScheduleDelivery', 'ProcessDelivery'])
         }
         self.root = self.flow['PickOrderFromHub']
         super(EcommerceWorkflow, self).__init__()

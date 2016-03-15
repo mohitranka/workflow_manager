@@ -4,7 +4,7 @@ Module to manage Job class and its interface
 import datetime
 import uuid
 from state import State
-from utils import get_executor
+from executors.utils import get_executor
 
 class Job(object):
     """
@@ -23,7 +23,7 @@ class Job(object):
         self.data = data
         self.completed_steps = completed_steps
 
-    def enqueue_job(job):
+    def enqueue_job(self, job):
         executor = get_executor(job.executor_class, job.backend_class)
         executor.save_job(job)
 
@@ -48,3 +48,8 @@ class Job(object):
 
     def modify_data(self, new_data):
         self.data = new_data
+        
+    def save(self):
+        executor = get_executor(self.executor_class, self.backend_class)
+        executor.save_job(self)
+        
